@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f2">
+  <title>랜덤 조 편성</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172a26;
+      --muted: #64736e;
+      --line: #dce5df;
+      --paper: #ffffff;
+      --canvas: #f5f7f2;
+      --green: #176b52;
+      --green-dark: #10513e;
+      --mint: #e8f4ed;
+      --gold: #f1c867;
+      --danger: #a63c32;
+      --shadow: 0 18px 50px rgba(27, 55, 45, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 85% 0%, rgba(232, 244, 237, .9), transparent 34rem),
+        var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .page {
+      width: min(100% - 36px, 980px);
+      margin: 0 auto;
+      padding: 46px 0 72px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green-dark);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--green);
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .privacy {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid #d5e7db;
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: rgba(255,255,255,.72);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .privacy-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #35a879;
+      box-shadow: 0 0 0 3px #e6f4ec;
+    }
+
+    .hero { margin-bottom: 28px; }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: -.055em;
+      line-height: 1.15;
+    }
+
+    .hero-copy {
+      max-width: 620px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .main-column { display: grid; gap: 18px; }
+
+    .card {
+      border: 1px solid rgba(220, 229, 223, .9);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .upload-card { padding: 24px; }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      margin-bottom: 19px;
+    }
+
+    .step {
+      display: grid;
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--mint);
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -.03em;
+    }
+
+    .section-heading p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .drop-zone {
+      display: grid;
+      min-height: 164px;
+      place-items: center;
+      border: 1.5px dashed #b9cec1;
+      border-radius: 15px;
+      padding: 20px;
+      background: #fbfdfb;
+      text-align: center;
+      transition: border-color .2s, background .2s;
+    }
+
+    .drop-zone:focus-within, .drop-zone:hover {
+      border-color: var(--green);
+      background: #f5faf6;
+    }
+
+    .upload-icon {
+      display: grid;
+      width: 43px;
+      height: 43px;
+      margin: 0 auto 9px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--mint);
+      color: var(--green);
+      font-size: 22px;
+    }
+
+    .drop-title { margin: 0; font-size: 14px; font-weight: 750; }
+    .drop-hint { margin: 4px 0 12px; color: var(--muted); font-size: 12px; }
+
+    .file-button, .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 0;
+      border-radius: 11px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 750;
+      transition: transform .15s, background .15s, box-shadow .15s;
+    }
+
+    .file-button, .button-primary {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 5px 12px rgba(23, 107, 82, .15);
+    }
+
+    .file-button:hover, .button-primary:hover {
+      transform: translateY(-1px);
+      background: var(--green-dark);
+    }
+
+    .button-secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .button-secondary:hover { background: #f7faf7; }
+    .button:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
+
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+
+    .file-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .file-name {
+      overflow: hidden;
+      color: var(--ink);
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .config {
+      display: none;
+      margin-top: 18px;
+      border-top: 1px solid #edf1ed;
+      padding-top: 18px;
+    }
+
+    .config.visible { display: block; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field label, .field-title {
+      display: block;
+      margin-bottom: 6px;
+      color: #34443e;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .field select, .field input[type="number"] {
+      width: 100%;
+      height: 43px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0 11px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .field select:focus, .field input[type="number"]:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(23, 107, 82, .1);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .check-row input { accent-color: var(--green); }
+
+    .list-preview {
+      margin-top: 15px;
+      border-radius: 11px;
+      padding: 12px 14px;
+      background: #f6f8f6;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .list-preview strong { color: var(--ink); }
+    .preview-names { margin-top: 5px; color: #47574f; }
+
+    .settings-card {
+      padding: 22px 24px 24px;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field-help { margin: 6px 0 0; color: var(--muted); font-size: 11px; }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+
+    .message.visible { display: block; }
+    .message.error { background: #fff0ee; color: var(--danger); }
+    .message.success { background: #edf8f1; color: var(--green-dark); }
+    .message.info { background: #f1f5f2; color: #4a5b53; }
+
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .results-card { padding: 22px 24px 24px; }
+
+    .results-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .results-header p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 11px;
+    }
+
+    .group-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 13px 14px;
+      background: #fff;
+    }
+
+    .group-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .group-count {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .group-card ol {
+      margin: 0;
+      padding-left: 21px;
+      color: #405149;
+      font-size: 13px;
+    }
+
+    .group-card li { padding: 2px 0; overflow-wrap: anywhere; }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .side-card {
+      position: sticky;
+      top: 18px;
+      padding: 20px;
+      background: #183c31;
+      color: #f5fbf7;
+      box-shadow: 0 18px 40px rgba(24, 60, 49, .15);
+    }
+
+    .side-card .eyebrow { color: #a9d8bd; }
+    .side-card h2 { font-size: 17px; }
+
+    .steps-list {
+      display: grid;
+      gap: 17px;
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps-list li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #c5d8ce;
+      font-size: 12px;
+    }
+
+    .steps-list b {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 11px;
+    }
+
+    .steps-list strong { display: block; margin-bottom: 2px; color: #fff; font-size: 12px; }
+
+    .side-note {
+      margin: 20px 0 0;
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding-top: 14px;
+      color: #b6ccc0;
+      font-size: 11px;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: #87958e;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 28px, 600px); padding-top: 25px; }
+      .topline { margin-bottom: 28px; }
+      .workspace { grid-template-columns: 1fr; }
+      .side-card { position: static; order: -1; }
+      .steps-list { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .steps-list li { grid-template-columns: 25px 1fr; gap: 7px; }
+      .side-note { margin-top: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .page { width: min(100% - 22px, 440px); }
+      .privacy { font-size: 10px; }
+      .hero-copy { font-size: 14px; }
+      .upload-card, .settings-card, .results-card { padding: 18px; }
+      .form-grid { grid-template-columns: 1fr; gap: 10px; }
+      .settings-row { grid-template-columns: 1fr; }
+      .settings-row .button { width: 100%; }
+      .results-header { flex-direction: column; }
+      .steps-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">조</span> 함께 만드는 공정한 조</div>
+      <div class="privacy"><span class="privacy-dot" aria-hidden="true"></span> 명렬은 내 기기에서만 처리돼요</div>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">CLASSROOM TOOL · RANDOM TEAMS</p>
+      <h1>오늘의 조,<br>공정하게 섞어볼까요?</h1>
+      <p class="hero-copy">학생 명렬 엑셀을 불러오고 조별 인원 수를 정하면, 새로운 조 편성을 만들어 드려요.</p>
+    </header>
+
+    <div class="workspace">
+      <div class="main-column">
+        <section class="card upload-card" aria-labelledby="upload-title">
+          <div class="section-heading">
+            <span class="step" aria-hidden="true">01</span>
+            <div>
+              <h2 id="upload-title">학생 명렬 불러오기</h2>
+              <p>엑셀 파일에서 이름이 있는 열을 선택해 주세요.</p>
+            </div>
+          </div>
+
+          <div class="drop-zone">
+            <div>
+              <div class="upload-icon" aria-hidden="true">↥</div>
+              <p class="drop-title">명렬 파일을 선택해 주세요</p>
+              <p class="drop-hint">Excel 통합 문서 .xlsx</p>
+              <label class="file-button" for="file-input">파일 선택</label>
+              <input class="file-input" id="file-input" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+            </div>
+          </div>
+
+          <div id="file-meta" class="file-meta" hidden>
+            <span id="file-name" class="file-name"></span>
+            <span id="student-count-label"></span>
+          </div>
+
+          <div id="config" class="config">
+            <div class="form-grid">
+              <div class="field">
+                <label for="sheet-select">시트 선택</label>
+                <select id="sheet-select"></select>
+              </div>
+              <div class="field">
+                <label for="name-column">이름이 있는 열</label>
+                <select id="name-column"></select>
+              </div>
+            </div>
+            <label class="check-row" for="header-row">
+              <input id="header-row" type="checkbox" checked>
+              첫 번째 행을 제목(머리글)으로 사용
+            </label>
+            <div id="list-preview" class="list-preview" aria-live="polite"></div>
+          </div>
+          <div id="file-message" class="message" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="settings-title">
+          <div class="section-heading">
+            <span class="step" aria-hidden="true">02</span>
+            <div>
+              <h2 id="settings-title">조 편성하기</h2>
+              <p>한 조에 몇 명씩 편성할지 정해 주세요.</p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="field">
+              <label for="group-size">조별 인원 수</label>
+              <input id="group-size" type="number" min="1" step="1" value="4" inputmode="numeric">
+              <p class="field-help">나누어떨어지지 않으면 마지막 조의 인원이 적을 수 있어요.</p>
+            </div>
+            <button id="make-groups" class="button button-primary" type="button" disabled>✦ 조 편성하기</button>
+          </div>
+          <div id="action-message" class="message" role="status" aria-live="polite"></div>
+        </section>
+
+        <section id="results" class="card results-card results" aria-labelledby="results-title">
+          <div class="results-header">
+            <div>
+              <div class="section-heading" style="margin-bottom:0">
+                <span class="step" aria-hidden="true">03</span>
+                <div>
+                  <h2 id="results-title">조 편성 결과</h2>
+                  <p id="result-summary"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="group-grid" class="group-grid"></div>
+          <div class="result-actions">
+            <button id="reshuffle" class="button button-secondary" type="button">↻ 다시 섞기</button>
+            <button id="download" class="button button-primary" type="button">↓ 엑셀로 다운로드</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="card side-card" aria-label="사용 방법">
+        <p class="eyebrow">HOW IT WORKS</p>
+        <h2>세 단계면 충분해요</h2>
+        <ol class="steps-list">
+          <li><b>1</b><span><strong>명렬 업로드</strong>학생 이름이 있는 엑셀을 선택해요.</span></li>
+          <li><b>2</b><span><strong>인원 설정</strong>한 조에 들어갈 인원 수를 정해요.</span></li>
+          <li><b>3</b><span><strong>결과 저장</strong>확인하고 엑셀로 내려받아요.</span></li>
+        </ol>
+        <p class="side-note">엑셀 처리 도구를 불러오려면 인터넷 연결이 필요해요. 명렬 파일과 학생 이름은 서버로 전송되지 않습니다. 중복 이름도 각각 다른 학생으로 처리해요.</p>
+      </aside>
+    </div>
+    <footer>조 편성은 무작위 순서로 진행됩니다. 마음에 들지 않으면 다시 섞을 수 있어요.</footer>
+  </main>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script>
+    (() => {
+      const fileInput = document.getElementById("file-input");
+      const fileMeta = document.getElementById("file-meta");
+      const fileName = document.getElementById("file-name");
+      const studentCountLabel = document.getElementById("student-count-label");
+      const config = document.getElementById("config");
+      const sheetSelect = document.getElementById("sheet-select");
+      const nameColumn = document.getElementById("name-column");
+      const headerRow = document.getElementById("header-row");
+      const listPreview = document.getElementById("list-preview");
+      const fileMessage = document.getElementById("file-message");
+      const actionMessage = document.getElementById("action-message");
+      const groupSizeInput = document.getElementById("group-size");
+      const makeGroupsButton = document.getElementById("make-groups");
+      const results = document.getElementById("results");
+      const resultSummary = document.getElementById("result-summary");
+      const groupGrid = document.getElementById("group-grid");
+      const reshuffleButton = document.getElementById("reshuffle");
+      const downloadButton = document.getElementById("download");
+
+      let workbook = null;
+      let students = [];
+      let groups = [];
+      let blankCount = 0;
+      let hasResult = false;
+
+      function showMessage(element, text, kind) {
+        element.textContent = text;
+        element.className = "message visible " + kind;
+      }
+
+      function clearMessage(element) {
+        element.textContent = "";
+        element.className = "message";
+      }
+
+      function resetResults() {
+        groups = [];
+        hasResult = false;
+        results.classList.remove("visible");
+        groupGrid.replaceChildren();
+        clearMessage(actionMessage);
+      }
+
+      function resetWorkbook() {
+        workbook = null;
+        students = [];
+        blankCount = 0;
+        config.classList.remove("visible");
+        fileMeta.hidden = true;
+        listPreview.textContent = "";
+        sheetSelect.replaceChildren();
+        nameColumn.replaceChildren();
+        makeGroupsButton.disabled = true;
+        clearMessage(fileMessage);
+        resetResults();
+      }
+
+      function columnLabel(index) {
+        let value = index + 1;
+        let label = "";
+        while (value > 0) {
+          const remainder = (value - 1) % 26;
+          label = String.fromCharCode(65 + remainder) + label;
+          value = Math.floor((value - 1) / 26);
+        }
+        return label;
+      }
+
+      function getRows() {
+        const sheet = workbook && workbook.Sheets[sheetSelect.value];
+        if (!sheet) return [];
+        return XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          defval: "",
+          raw: false,
+          blankrows: true
+        });
+      }
+
+      function parseSelectedSheet(preferredColumn) {
+        if (!workbook) return;
+        resetResults();
+        clearMessage(fileMessage);
+
+        const rows = getRows();
+        const hasHeader = headerRow.checked;
+        const firstRow = hasHeader && rows.length ? rows[0] : [];
+        const columnCount = Math.max(
+          firstRow.length,
+          ...rows.map((row) => row.length),
+          0
+        );
+
+        if (columnCount === 0) {
+          students = [];
+          blankCount = 0;
+          nameColumn.replaceChildren();
+          listPreview.textContent = "선택한 시트에 읽을 수 있는 셀이 없습니다.";
+          makeGroupsButton.disabled = true;
+          return;
+        }
+
+        const previousIndex = Number.isInteger(preferredColumn)
+          ? preferredColumn
+          : Number(nameColumn.value);
+        const headerValues = Array.from({ length: columnCount }, (_, index) =>
+          String(firstRow[index] == null ? "" : firstRow[index]).trim()
+        );
+
+        nameColumn.replaceChildren();
+        for (let index = 0; index < columnCount; index += 1) {
+          const option = document.createElement("option");
+          option.value = String(index);
+          const title = headerValues[index];
+          option.textContent = title
+            ? title + " (열 " + columnLabel(index) + ")"
+            : "열 " + columnLabel(index);
+          nameColumn.append(option);
+        }
+
+        const likelyNameColumns = headerValues
+          .map((value, index) => ({ value, index }))
+          .filter(({ value }) => /이름|성명|학생명/.test(value));
+        let selectedIndex = previousIndex;
+        if (!Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex >= columnCount) {
+          selectedIndex = likelyNameColumns.length === 1
+            ? likelyNameColumns[0].index
+            : columnCount === 1 ? 0 : -1;
+        }
+        nameColumn.value = selectedIndex >= 0 ? String(selectedIndex) : "";
+
+        updateStudentList();
+      }
+
+      function updateStudentList() {
+        resetResults();
+        clearMessage(fileMessage);
+        const rows = getRows();
+        const selectedColumn = Number(nameColumn.value);
+
+        if (!Number.isInteger(selectedColumn) || selectedColumn < 0) {
+          students = [];
+          blankCount = 0;
+          listPreview.textContent = "학생 이름 열을 선택해 주세요.";
+          makeGroupsButton.disabled = true;
+          return;
+        }
+
+        const startIndex = headerRow.checked ? 1 : 0;
+        const dataRows = rows.slice(startIndex);
+        const selectedNames = dataRows.map((row, rowIndex) => ({
+          name: String(row[selectedColumn] == null ? "" : row[selectedColumn]).trim(),
+          sourceRow: rowIndex + startIndex + 1
+        }));
+        students = selectedNames
+          .filter((student) => student.name.length > 0)
+          .map((student, index) => ({
+            name: student.name,
+            sourceRow: student.sourceRow,
+            id: index
+          }));
+        blankCount = selectedNames.length - students.length;
+        studentCountLabel.textContent = students.length + "명";
+        makeGroupsButton.disabled = students.length === 0;
+
+        if (students.length === 0) {
+          listPreview.textContent = "선택한 열에서 이름을 찾지 못했어요. 시트, 이름 열, 머리글 설정을 확인해 주세요.";
+          return;
+        }
+
+        const preview = students.slice(0, 8).map((student) => student.name).join(", ");
+        const more = students.length > 8 ? " 외 " + (students.length - 8) + "명" : "";
+        listPreview.replaceChildren();
+        const count = document.createElement("strong");
+        count.textContent = "학생 " + students.length + "명 확인";
+        listPreview.append(count);
+        const details = document.createElement("div");
+        details.className = "preview-names";
+        details.textContent = preview + more + (blankCount ? " · 빈 셀 " + blankCount + "개 제외" : "");
+        listPreview.append(details);
+      }
+
+      function shuffle(items) {
+        const shuffled = items.slice();
+        for (let index = shuffled.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+        }
+        return shuffled;
+      }
+
+      function createGroups() {
+        const size = Number(groupSizeInput.value);
+        if (!Number.isInteger(size) || size < 1) {
+          showMessage(actionMessage, "조별 인원 수는 1 이상의 정수로 입력해 주세요.", "error");
+          groupSizeInput.focus();
+          return;
+        }
+        if (students.length === 0) {
+          showMessage(actionMessage, "먼저 학생 명렬 파일을 불러오고 이름 열을 선택해 주세요.", "error");
+          return;
+        }
+
+        const randomized = shuffle(students);
+        groups = [];
+        for (let offset = 0; offset < randomized.length; offset += size) {
+          groups.push(randomized.slice(offset, offset + size));
+        }
+        hasResult = true;
+        clearMessage(actionMessage);
+        renderGroups(size);
+      }
+
+      function renderGroups(size) {
+        groupGrid.replaceChildren();
+        groups.forEach((members, index) => {
+          const card = document.createElement("article");
+          card.className = "group-card";
+          const title = document.createElement("div");
+          title.className = "group-title";
+          const name = document.createElement("span");
+          name.textContent = (index + 1) + "조";
+          const count = document.createElement("span");
+          count.className = "group-count";
+          count.textContent = members.length + "명";
+          title.append(name, count);
+
+          const list = document.createElement("ol");
+          members.forEach((student) => {
+            const item = document.createElement("li");
+            item.textContent = student.name;
+            list.append(item);
+          });
+          card.append(title, list);
+          groupGrid.append(card);
+        });
+
+        resultSummary.textContent =
+          students.length + "명 · " + groups.length + "개 조 · 조별 " + size + "명 기준";
+        results.classList.add("visible");
+      }
+
+      async function loadFile(file) {
+        resetWorkbook();
+        if (!file) return;
+        fileName.textContent = file.name;
+        fileMeta.hidden = false;
+
+        if (!/\.xlsx$/i.test(file.name)) {
+          showMessage(fileMessage, "현재는 .xlsx 파일만 지원해요. 엑셀 통합 문서(.xlsx)를 선택해 주세요.", "error");
+          return;
+        }
+        if (typeof XLSX === "undefined") {
+          showMessage(fileMessage, "엑셀 읽기 도구를 불러오지 못했어요. 인터넷 연결을 확인한 뒤 페이지를 새로고침해 주세요.", "error");
+          return;
+        }
+
+        try {
+          const buffer = await file.arrayBuffer();
+          const parsed = XLSX.read(buffer, { type: "array", cellDates: false });
+          if (!parsed.SheetNames || parsed.SheetNames.length === 0) {
+            throw new Error("이 파일에서 시트를 찾지 못했습니다.");
+          }
+          workbook = parsed;
+          sheetSelect.replaceChildren();
+          workbook.SheetNames.forEach((sheetName) => {
+            const option = document.createElement("option");
+            option.value = sheetName;
+            option.textContent = sheetName;
+            sheetSelect.append(option);
+          });
+          config.classList.add("visible");
+          parseSelectedSheet(-1);
+          if (students.length === 0) {
+            showMessage(fileMessage, "학생 이름을 찾지 못했어요. 시트와 이름 열, 머리글 설정을 확인해 주세요.", "info");
+          } else {
+            showMessage(fileMessage, "명렬을 기기에서 확인했어요. 파일 내용은 서버로 전송되지 않습니다.", "success");
+          }
+        } catch (error) {
+          resetWorkbook();
+          showMessage(
+            fileMessage,
+            "엑셀 파일을 읽지 못했어요. 파일이 손상되지 않았는지, .xlsx 형식인지 확인해 주세요.",
+            "error"
+          );
+        }
+      }
+
+      function downloadWorkbook() {
+        if (!hasResult || groups.length === 0 || typeof XLSX === "undefined") {
+          showMessage(actionMessage, "먼저 조 편성을 완료해 주세요.", "error");
+          return;
+        }
+        try {
+          const resultRows = [["조 번호", "학생 이름"]];
+          const summaryRows = [["조 번호", "인원 수"]];
+          groups.forEach((members, index) => {
+            summaryRows.push([(index + 1) + "조", members.length]);
+            members.forEach((student) => resultRows.push([(index + 1) + "조", student.name]));
+          });
+
+          const output = XLSX.utils.book_new();
+          const resultSheet = XLSX.utils.aoa_to_sheet(resultRows);
+          const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+          XLSX.utils.book_append_sheet(output, resultSheet, "조 편성 결과");
+          XLSX.utils.book_append_sheet(output, summarySheet, "조별 인원");
+
+          const date = new Date();
+          const dateText = [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+          ].join("");
+          XLSX.writeFile(output, "랜덤조편성_" + dateText + ".xlsx");
+          showMessage(actionMessage, "조 편성 결과를 엑셀 파일로 저장했어요.", "success");
+        } catch (error) {
+          showMessage(actionMessage, "엑셀 파일을 만들지 못했어요. 다시 시도해 주세요.", "error");
+        }
+      }
+
+      fileInput.addEventListener("change", (event) => {
+        loadFile(event.target.files && event.target.files[0]);
+      });
+      sheetSelect.addEventListener("change", () => parseSelectedSheet(-1));
+      nameColumn.addEventListener("change", updateStudentList);
+      headerRow.addEventListener("change", () => parseSelectedSheet(-1));
+      makeGroupsButton.addEventListener("click", createGroups);
+      reshuffleButton.addEventListener("click", createGroups);
+      downloadButton.addEventListener("click", downloadWorkbook);
+      groupSizeInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") createGroups();
+      });
+    })();
+  </script>
+</body>
+</html>

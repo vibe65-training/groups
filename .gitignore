@@ -1,0 +1,8 @@
+.vercel
+.DS_Store
+Thumbs.db
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+*.csv
